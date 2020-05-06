@@ -73,15 +73,15 @@
                 - Host: peer0.manufacturer.example.com
                   Port: 7051
     
-        - &MiddleMan
+        - &MiddleMen
             # DefaultOrg defines the organization which is used in the sampleconfig
             # of the fabric.git development environment
-            Name: MiddleManMSP
+            Name: MiddleMenMSP
     
             # ID to load the MSP definition as
-            ID: MiddleManMSP
+            ID: MiddleMenMSP
     
-            MSPDir: crypto-config/peerOrganizations/middleman.example.com/msp
+            MSPDir: crypto-config/peerOrganizations/middlemen.example.com/msp
     
             # Policies defines the set of policies at this level of the config tree
             # For organization policies, their canonical path is usually
@@ -89,13 +89,13 @@
             Policies:
                 Readers:
                     Type: Signature
-                    Rule: "OR('MiddleManMSP.admin', 'MiddleManMSP.peer', 'MiddleManMSP.client')"
+                    Rule: "OR('MiddleMenMSP.admin', 'MiddleMenMSP.peer', 'MiddleMenMSP.client')"
                 Writers:
                     Type: Signature
-                    Rule: "OR('MiddleManMSP.admin', 'MiddleManMSP.client')"
+                    Rule: "OR('MiddleMenMSP.admin', 'MiddleMenMSP.client')"
                 Admins:
                     Type: Signature
-                    Rule: "OR('MiddleManMSP.admin')"
+                    Rule: "OR('MiddleMenMSP.admin')"
         
         
     
@@ -103,7 +103,7 @@
                 # AnchorPeers defines the location of peers which can be used
                 # for cross org gossip communication.  Note, this value is only
                 # encoded in the genesis block in the Application section context
-                - Host: peer0.middleman.example.com
+                - Host: peer0.middlemen.example.com
                   Port: 8051
         
         - &Consumer
@@ -114,7 +114,7 @@
             # ID to load the MSP definition as
             ID: ConsumerMSP
     
-            MSPDir: crypto-config/peerOrganizations/middleman.example.com/msp
+            MSPDir: crypto-config/peerOrganizations/consumer.example.com/msp
     
             # Policies defines the set of policies at this level of the config tree
             # For organization policies, their canonical path is usually
@@ -387,7 +387,7 @@
                 SampleConsortium:
                     Organizations:
                     - *Manufacturer
-                    - *MiddleMan
+                    - *MiddleMen
                     - *Consumer
         TraceOrgsChannel:
             Consortium: SampleConsortium
@@ -396,7 +396,7 @@
                 <<: *ApplicationDefaults
                 Organizations:
                     - *Manufacturer
-                    - *MiddleMan
+                    - *MiddleMen
                     - *Consumer
                 Capabilities:
                     <<: *ApplicationCapabilities
