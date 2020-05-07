@@ -1,0 +1,155 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: "2"
+
+volumes:
+  orderer.example.com:
+  peer0.manufacturer.example.com:
+  peer0.middlemen.example.com:
+  peer1.middlemen.example.com:
+  peer2.middlemen.example.com:
+  peer0.customer.example.com:
+
+networks:
+  supplychain_hlfn:
+
+services:
+  orderer.example.com:
+    extends:
+      file: base/docker-compose-base.yaml
+      service: orderer.example.com
+    container_name: orderer.example.com
+    networks:
+      - supplychain_hlfn
+
+  peer0.manufacturer.example.com:
+    container_name: peer0.manufacturer.example.com
+    extends:
+      file: base/docker-compose-base.yaml
+      service: peer0.manufacturer.example.com
+    networks:
+      - supplychain_hlfn
+
+  peer0.middlemen.example.com:
+    container_name: peer0.middlemen.example.com
+    extends:
+      file: base/docker-compose-base.yaml
+      service: peer0.middlemen.example.com
+    networks:
+      - supplychain_hlfn
+
+  peer1.middlemen.example.com:
+    container_name: peer1.middlemen.example.com
+    extends:
+      file: base/docker-compose-base.yaml
+      service: peer1.middlemen.example.com
+    networks:
+      - supplychain_hlfn
+
+  peer2.middlemen.example.com:
+    container_name: peer2.middlemen.example.com
+    extends:
+      file: base/docker-compose-base.yaml
+      service: peer2.middlemen.example.com
+    networks:
+      - supplychain_hlfn
+
+  peer0.customer.example.com:
+    container_name: peer0.customer.example.com
+    extends:
+      file: base/docker-compose-base.yaml
+      service: peer0.customer.example.com
+    networks:
+      - supplychain_hlfn
+
+  ca.manufacturer.example.com:
+    container_name: ca.manufacturer.example.com
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.manufacturer.example.com
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.manufacturer.example.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/${MANUFACTURER_CA_PRIVATE_KEY}
+      - FABRIC_CA_SERVER_PORT=7054
+    volumes:
+      - ./network/crypto-config/peerOrganizations/manufacturer.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    command: sh -c 'fabric-ca-server start --ca.MANUFACTURER_CA_PRIVATE_KEY /etc/hyperledger/fabric-ca-server-config/ca.manufacturer.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/${MANUFACTURER_CA_PRIVATE_KEY} -b admin:adminpw -d'
+    ports:
+      - 7054:7054
+    networks:
+      - supplychain_hlfn
+
+  ca.middlemen.example.com:
+    container_name: ca.middlemen.example.com
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.middlemen.example.com
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.middlemen.example.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/${MIDDLEMEN_CA_PRIVATE_KEY}
+      - FABRIC_CA_SERVER_PORT=8054
+    volumes:
+      - ./network/crypto-config/peerOrganizations/middlemen.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.middlemen.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/${MIDDLEMEN_CA_PRIVATE_KEY} -b admin:adminpw -d'
+    ports:
+      - 8054:8054
+    networks:
+      - supplychain_hlfn
+
+  ca.customer.example.com:
+    container_name: ca.customer.example.com
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.customer.example.com
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.customer.example.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/${CUSTOMER_CA_PRIVATE_KEY}
+      - FABRIC_CA_SERVER_PORT=8054
+    volumes:
+      - ./network/crypto-config/peerOrganizations/customer.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.customer.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/${CUSTOMER_CA_PRIVATE_KEY} -b admin:adminpw -d'
+    ports:
+      - 8054:8054
+    networks:
+      - supplychain_hlfn
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:$IMAGE_TAG
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.manufacturer.example.com:7051
+      - CORE_PEER_LOCALMSPID=ManufacturerMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/manufacturer.example.com/users/Admin@manufacturer.example.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/:/host/var/run/
+      - ../chaincode/:/opt/gopath/src/github.com/chaincode/
+      - ./network/crypto-config/:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+      - ../scripts/:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+      - ./network/:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/
+    depends_on:
+      - orderer.example.com
+      - peer0.manufacturer.example.com
+      - peer0.middlemen.example.com
+      - peer1.middlemen.example.com
+      - peer2.middlemen.example.com
+      - peer0.customer.example.com
+    networks:
+      - supplychain_hlfn
