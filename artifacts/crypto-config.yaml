@@ -1,0 +1,54 @@
+OrdererOrgs:
+  # ---------------------------------------------------------------------------
+  # Orderer
+  # ---------------------------------------------------------------------------
+  - Name: Orderer
+    Domain: example.com
+    EnableNodeOUs: true
+    
+    Specs:
+      - Hostname: orderer
+PeerOrgs:
+  # ---------------------------------------------------------------------------
+  # Org1 : Manufacturer
+  # ---------------------------------------------------------------------------
+  - Name: Manufacturer
+    Domain: manufacturer.example.com
+
+    #CA:
+    #   Hostname: ca # implicitly ca.manufacturer.example.com
+
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+  # ---------------------------------------------------------------------------
+  # Org2: Wholeseller / Distributor / Retailer [MiddleMen]
+  # ---------------------------------------------------------------------------
+  - Name: MiddleMen
+    Domain: middlemen.example.com
+
+    #CA:
+    #   Hostname: ca # implicitly ca.middlemen.example.com
+
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+  # ---------------------------------------------------------------------------
+  # Org3: Consumer
+  # ---------------------------------------------------------------------------
+  - Name: Consumer
+    Domain: consumer.example.com
+
+    #CA:
+    #   Hostname: ca # implicitly ca.consumer.example.com
+
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+    Users:
+      Count: 1
