@@ -1,0 +1,131 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+services:
+
+  orderer.example.com:
+    container_name: orderer.example.com
+    extends:
+      file: peer-base.yaml
+      service: orderer-base
+    volumes:
+        - ../channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
+        - ../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls
+        - orderer.example.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+
+  peer0.manufacturer.example.com:
+    container_name: peer0.manufacturer.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.manufacturer.example.com
+      - CORE_PEER_ADDRESS=peer0.manufacturer.example.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.manufacturer.example.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.manufacturer.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.manufacturer.example.com:7051
+      - CORE_PEER_LOCALMSPID=ManufacturerMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.manufacturer.example.com:/var/hyperledger/production
+    ports:
+      - 7051:7051
+
+  peer0.middlemen.example.com:
+    container_name: peer0.middlemen.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.middlemen.example.com
+      - CORE_PEER_ADDRESS=peer0.middlemen.example.com:8051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.middlemen.example.com:8052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.middlemen.example.com:8051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.middlemen.example.com:9051
+      - CORE_PEER_LOCALMSPID=MiddlemenMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer0.middlemen.example.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer0.middlemen.example.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.middlemen.example.com:/var/hyperledger/production
+    ports:
+      - 8051:8051
+
+  peer1.middlemen.example.com:
+    container_name: peer1.middlemen.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.middlemen.example.com
+      - CORE_PEER_ADDRESS=peer1.middlemen.example.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.middlemen.example.com:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.middlemen.example.com:9051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.middlemen.example.com:10051
+      - CORE_PEER_LOCALMSPID=MiddlemenMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer1.middlemen.example.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer1.middlemen.example.com/tls:/etc/hyperledger/fabric/tls
+        - peer1.middlemen.example.com:/var/hyperledger/production
+    ports:
+      - 9051:9051
+
+  peer2.middlemen.example.com:
+    container_name: peer2.middlemen.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer2.middlemen.example.com
+      - CORE_PEER_ADDRESS=peer2.middlemen.example.com:10051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:10051
+      - CORE_PEER_CHAINCODEADDRESS=peer2.middlemen.example.com:10052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:10052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.middlemen.example.com:10051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.middlemen.example.com:9051
+      - CORE_PEER_LOCALMSPID=MiddlemenMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer2.middlemen.example.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer2.middlemen.example.com/tls:/etc/hyperledger/fabric/tls
+        - peer2.middlemen.example.com:/var/hyperledger/production
+    ports:
+      - 10051:10051
+
+peer0.customer.example.com:
+    container_name: peer0.customer.example.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.customer.example.com
+      - CORE_PEER_ADDRESS=peer0.customer.example.com:11051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.customer.example.com:11052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.customer.example.com:11051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.customer.example.com:11051
+      - CORE_PEER_LOCALMSPID=CustomerMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/customer.example.com/peers/peer0.customer.example.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/customer.example.com/peers/peer0.customer.example.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.customer.example.com:/var/hyperledger/production
+    ports:
+      - 11051:11051
