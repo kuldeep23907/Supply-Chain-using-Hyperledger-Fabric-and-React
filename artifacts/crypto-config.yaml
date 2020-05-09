@@ -21,7 +21,7 @@ PeerOrgs:
     EnableNodeOUs: true
 
     Template:
-      Count: 2
+      Count: 1
     Users:
       Count: 1
   # ---------------------------------------------------------------------------
@@ -35,7 +35,7 @@ PeerOrgs:
 
     EnableNodeOUs: true
     Template:
-      Count: 2
+      Count: 3
     Users:
       Count: 1
   # ---------------------------------------------------------------------------
@@ -49,6 +49,6 @@ PeerOrgs:
 
     EnableNodeOUs: true
     Template:
-      Count: 2
+      Count: 1
     Users:
       Count: 1
