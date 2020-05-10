@@ -4,6 +4,8 @@ This projects keeps track record of any product starting from manufacturer to cu
 
 # Steps to up the network
 
+## Goto artifacts folder first and make the following directories
+
 mkdir channel-artifacts
 
 mkdir crypto-config
