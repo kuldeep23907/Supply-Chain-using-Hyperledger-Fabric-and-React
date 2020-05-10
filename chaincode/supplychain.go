@@ -37,7 +37,8 @@ type Product struct {
 	Wholesaler_ID string `json:"WholesalerID"` 	
 	Status string `json:"Status"` 	
 	Date string `json:"Date"` 	
-	Price float64 `json:"Price"` }  
+	Price float64 `json:"Price"` 
+}  
 	
 // =================================================================================== // Main // =================================================================================== 
 
@@ -50,12 +51,12 @@ func main() {
 
 // Init initializes chaincode // =========================== 
 
-func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response 
+func (t *food_supplychain) Init(stub shim.ChaincodeStubInterface) pb.Response 
 { 	return shim.Success(nil) }  
 
 // Invoke - Our entry point for Invocations // ======================================== 
 
-func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
+func (t *food_supplychain) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
 { 	function, args := stub.GetFunctionAndParameters() 	
 	fmt.Println("invoke is running " + function)  	
 	
