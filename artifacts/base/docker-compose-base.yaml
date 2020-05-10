@@ -108,24 +108,24 @@ services:
     ports:
       - 10051:10051
 
-peer0.consumer.example.com:
-    container_name: peer0.consumer.example.com
-    extends:
-      file: peer-base.yaml
-      service: peer-base
-    environment:
-      - CORE_PEER_ID=peer0.consumer.example.com
-      - CORE_PEER_ADDRESS=peer0.consumer.example.com:11051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.consumer.example.com:11052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.consumer.example.com:11051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.consumer.example.com:11051
-      - CORE_PEER_LOCALMSPID=ConsumerMSP
-    volumes:
-        - /var/run/:/host/var/run/
-        - ../crypto-config/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/msp:/etc/hyperledger/fabric/msp
-        - ../crypto-config/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/tls:/etc/hyperledger/fabric/tls
-        - peer0.consumer.example.com:/var/hyperledger/production
-    ports:
-      - 11051:11051
+  peer0.consumer.example.com:
+      container_name: peer0.consumer.example.com
+      extends:
+        file: peer-base.yaml
+        service: peer-base
+      environment:
+        - CORE_PEER_ID=peer0.consumer.example.com
+        - CORE_PEER_ADDRESS=peer0.consumer.example.com:11051
+        - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
+        - CORE_PEER_CHAINCODEADDRESS=peer0.consumer.example.com:11052
+        - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
+        - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.consumer.example.com:11051
+        - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.consumer.example.com:11051
+        - CORE_PEER_LOCALMSPID=ConsumerMSP
+      volumes:
+          - /var/run/:/host/var/run/
+          - ../crypto-config/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/msp:/etc/hyperledger/fabric/msp
+          - ../crypto-config/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/tls:/etc/hyperledger/fabric/tls
+          - peer0.consumer.example.com:/var/hyperledger/production
+      ports:
+        - 11051:11051

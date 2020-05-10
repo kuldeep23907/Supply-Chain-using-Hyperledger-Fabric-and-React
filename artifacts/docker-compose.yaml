@@ -115,7 +115,7 @@ services:
       - ./network/crypto-config/peerOrganizations/consumer.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
     command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.consumer.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/${CONSUMER_CA_PRIVATE_KEY} -b admin:adminpw -d'
     ports:
-      - 8054:8054
+      - 9054:9054
     networks:
       - supplychain_hlfn
 
