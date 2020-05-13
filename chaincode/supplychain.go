@@ -61,12 +61,12 @@ func main() {
 
 // Init initializes chaincode // =========================== 
 
-func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response 
+func (t *food_supplychain) Init(stub shim.ChaincodeStubInterface) pb.Response 
 { 	return shim.Success(nil) }  
 
 // Invoke - Our entry point for Invocations // ======================================== 
 
-func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
+func (t *food_supplychain) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
 { 	function, args := stub.GetFunctionAndParameters() 	
 	fmt.Println("invoke is running " + function)  	
 	
@@ -233,8 +233,8 @@ func (t *food_supplychain) GetTxTimestampChannel(APIstub shim.ChaincodeStubInter
 }
 
 
-// query all assets
-func (t *food_supplychain) queryAllAsset(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
+// query all 
+func (t *food_supplychain) queryAll(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
 
 	startKey := ""
 
