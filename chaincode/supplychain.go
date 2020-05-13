@@ -170,8 +170,8 @@ func (t *food_supplychain) sendToDistributer(APIstub shim.ChaincodeStubInterface
 
 	json.Unmarshal(productBytes, &product)
 
-	if product.Order_ID != nil {
-		return shim.Error("Product is ordered already")
+	if product.Distributer_ID != nil {
+		return shim.Error("Product is send to distributer already")
 	}
 
 	dates := ProductDates{}
