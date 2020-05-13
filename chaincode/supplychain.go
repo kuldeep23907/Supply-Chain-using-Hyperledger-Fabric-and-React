@@ -210,12 +210,12 @@ func (t *food_supplychain) sendToDistributer(APIstub shim.ChaincodeStubInterface
 	// 	Date:
 	// }
 
-	errPut := APIstub.PutState(product.Product_Id, updatedProductAsBytes)
+	errPut := APIstub.PutState(product.Product_ID, updatedProductAsBytes)
 	if errPut != nil {
-		return shim.Error(fmt.Sprintf("Failed to Send to Distributor: %s", product.Product_ID.Product_Id))
+		return shim.Error(fmt.Sprintf("Failed to Send to Distributor: %s", product.Product_ID))
 	}
 
-	fmt.Println("Success in updating Product Asset %v ", product.Product_ID)
+	fmt.Println("Success in sending Product %v ", product.Product_ID)
 	return shim.Success(nil)
 }
 
