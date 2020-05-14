@@ -1,14 +1,14 @@
-package main  
+package main
 
-import ( 	
-	"bytes" 	
-	"encoding/json" 	
-	"fmt" 	
-	"strconv" 	
-	"time"  	
-	"github.com/hyperledger/fabric/core/chaincode/shim" 	
-	pb "github.com/hyperledger/fabric/protos/peer" 
-)  
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"strconv"
+	"time"
+	"github.com/hyperledger/fabric/core/chaincode/shim"
+	pb "github.com/hyperledger/fabric/protos/peer"
+)
 
 type food_supplychain struct {
 }
@@ -17,87 +17,87 @@ type CounterNO struct {
 	Counter int `json:"counter"`
 }
 
-type User struct { 	
-	Name string `json:"Name"` 	
-	User_ID string `json:"UserID"` 	
-	Email string  `json:"Email"` 	
-	User_Type string `json:"UserType"` 
+type User struct {
+	Name string `json:"Name"`
+	User_ID string `json:"UserID"`
+	Email string  `json:"Email"`
+	User_Type string `json:"UserType"`
 	Address string `json:"Address"`
-} 
-
-type ProductDates struct {
-	ManufactureDate  string `json:"ManufactureDate"` 
-	SendToWholesalerDate  string `json:"SendToWholesalerDate"` 
-	SendToDistributorDate  string `json:"SendToDistributorDate"` 
-	SendToRetailerDate  string `json:"SendToRetailerDate"` 
-	SellToConsumerDate  string `json:"SellToConsumerDate"` 
-	DeliveredDate  string `json:"DeliveredDate"` 
 }
 
-type Product struct { 	
-	Product_ID string `json:"ProductID"` 	
-	Order_ID string `json:"OrderID"` 	
-	Name string `json:"Name"` 	
-	Consumer_ID string `json:"ConsumerID"` 	
-	Manufacturer_ID string `json:"ManufacturerID"` 	
-	Retailer_ID string `json:"RetailerID"` 	
-	Distributer_ID string `json:"DistributerID"` 	
-	Wholesaler_ID string `json:"WholesalerID"` 	
-	Status string `json:"Status"` 	
-	Date ProductDates `json:"Date"` 	
-	Price float64 `json:"Price"` 
-}  
-	
-// =================================================================================== // Main // =================================================================================== 
+type ProductDates struct {
+	ManufactureDate  string `json:"ManufactureDate"`
+	SendToWholesalerDate  string `json:"SendToWholesalerDate"`
+	SendToDistributorDate  string `json:"SendToDistributorDate"`
+	SendToRetailerDate  string `json:"SendToRetailerDate"`
+	SellToConsumerDate  string `json:"SellToConsumerDate"`
+	DeliveredDate  string `json:"DeliveredDate"`
+}
 
-func main() { 	
-	err := shim.Start(new(food_supplychain)) 	
-	if err != nil { 		
-		fmt.Printf("Error starting Simple chaincode: %s", err) 	
-		} 
-} 
+type Product struct {
+	Product_ID string `json:"ProductID"`
+	Order_ID string `json:"OrderID"`
+	Name string `json:"Name"`
+	Consumer_ID string `json:"ConsumerID"`
+	Manufacturer_ID string `json:"ManufacturerID"`
+	Retailer_ID string `json:"RetailerID"`
+	Distributer_ID string `json:"DistributerID"`
+	Wholesaler_ID string `json:"WholesalerID"`
+	Status string `json:"Status"`
+	Date ProductDates `json:"Date"`
+	Price float64 `json:"Price"`
+}
 
-// Init initializes chaincode // =========================== 
+// =================================================================================== // Main // ===================================================================================
 
-func (t *food_supplychain) Init(stub shim.ChaincodeStubInterface) pb.Response 
-{ 	return shim.Success(nil) }  
+func main() {
+	err := shim.Start(new(food_supplychain))
+	if err != nil {
+		fmt.Printf("Error starting Simple chaincode: %s", err)
+		}
+}
 
-// Invoke - Our entry point for Invocations // ======================================== 
+// Init initializes chaincode // ===========================
 
-func (t *food_supplychain) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
-{ 	function, args := stub.GetFunctionAndParameters() 	
-	fmt.Println("invoke is running " + function)  	
-	
-	// Handle different functions 
-		if function == "createProduct" 
-		{ //create a new product		
-			return t.createProduct(stub, args) 	
+func (t *food_supplychain) Init(stub shim.ChaincodeStubInterface) pb.Response
+{ 	return shim.Success(nil) }
+
+// Invoke - Our entry point for Invocations // ========================================
+
+func (t *food_supplychain) Invoke(stub shim.ChaincodeStubInterface) pb.Response
+{ 	function, args := stub.GetFunctionAndParameters()
+	fmt.Println("invoke is running " + function)
+
+	// Handle different functions
+		if function == "createProduct"
+		{ //create a new product
+			return t.createProduct(stub, args)
 		} else if function == "updateProduct"
-		{ // update a product		
-			return t.updateProduct(stub, args) 	
+		{ // update a product
+			return t.updateProduct(stub, args)
 		} else if function == "sendToWholesaler"
-		{ // send to wholesaler		
-			return t.sendToWholesaler(stub, args) 	
+		{ // send to wholesaler
+			return t.sendToWholesaler(stub, args)
 		}	else if function == "sendToDistributer"
-		{ // send to Distributer		
-			return t.sendToDistributer(stub, args) 	
+		{ // send to Distributer
+			return t.sendToDistributer(stub, args)
 		}	else if function == "sendToRetailer"
-		{ // send to Retailer		
-			return t.sendToRetailer(stub, args) 	
+		{ // send to Retailer
+			return t.sendToRetailer(stub, args)
 		}	else if function == "sellToConsumer"
-		{ // send to Consumer		
-			return t.sellToConsumer(stub, args) 	
+		{ // send to Consumer
+			return t.sellToConsumer(stub, args)
 		} else if function == "query" {
 			return t.Query(stub, args)
 		} else if function == "queryAll" {
 			return t.Query(stub, args)
 		}
-		fmt.Println("invoke did not find func: " + function) 
-		//error 	
-		return shim.Error("Received unknown function invocation")  
+		fmt.Println("invoke did not find func: " + function)
+		//error
+		return shim.Error("Received unknown function invocation")
 }
 
-// Private function 
+// Private function
 
 //getCounter to the latest value of the counter based on the Asset Type provided as input parameter
 func getCounter(APIstub shim.ChaincodeStubInterface, AssetType string) int {
@@ -261,11 +261,11 @@ func (t *food_supplychain) sendToDistributer(APIstub shim.ChaincodeStubInterface
 		return shim.Error(fmt.Sprintf("Marshal Error: %s", errMarshal))
 	}
 
-	// var newProductDetails = Product{ 
-	// 	Product_Id: product.product_ID, 
-	// 	Order_ID: product.Order_ID, 
-	// 	Name: product.Name, 
-	// 	Status: product.Status, 
+	// var newProductDetails = Product{
+	// 	Product_Id: product.product_ID,
+	// 	Order_ID: product.Order_ID,
+	// 	Name: product.Name,
+	// 	Status: product.Status,
 	// 	Price: product.Price,
 	// 	Manufacturer_ID: product.Manufacturer_ID,
 	// 	Wholesaler_ID: product.Wholesaler_ID,
@@ -306,7 +306,7 @@ func (t *food_supplychain) queryProduct(APIstub shim.ChaincodeStubInterface, arg
 	return shim.Success(productAsBytes)
 }
 
-// query all 
+// query all
 func (t *food_supplychain) queryAll(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
 
 	startKey := ""
@@ -375,4 +375,91 @@ func (t *food_supplychain) queryAll(APIstub shim.ChaincodeStubInterface, args []
 
 	return shim.Success(buffer.Bytes())
 
+}
+
+// function to sell the product to consumer
+// Input params , product id  consumer id
+func sellToConsumer(APIstub shim.ChaincodeStubInterface,args[] string) pb.Response{
+
+	// parameter length check
+	if len(args) != 2 {
+		return shim.Error("Incorrect number of arguments, Required 2")
+	}
+
+	// parameter null check
+	if len(args[0]) == 0 {
+		return shim.Error("Product Id must be provided");
+	}
+
+	if len(args[1]) == 0 {
+		return shim.Error("Consumer Id must be provided");
+	}
+
+	// get user details from the stub ie. Chaincode stub in network using the user id passed
+	userBytes, _ := APIstub.GetState(args[1])
+
+	if userBytes == nil {
+		return shim.Error("Cannot Find Consumer user")
+	}
+
+	user := User{}
+	
+	// unmarsahlling product the data from API
+	json.Unmarshal(userBytes, &user)
+
+	// User type check for the function
+	if user.User_Type != "consumer" {
+		return shim.Error("User type must be Consumer")
+	}
+
+	// get product details from the stub ie. Chaincode stub in network using the product id passed
+	productBytes, _ := APIstub.GetState(args[0])
+
+
+	if productBytes == nil {
+		return shim.Error("Cannot Find Product")
+	}
+
+	product := Product{}
+
+	// unmarsahlling product the data from API
+	json.Unmarshal(productBytes, &product)
+
+	// check if the product is sold to consumer already
+	if product.Consumer_ID != nil {
+		return shim.Error("Product is sold to customer already")
+	}
+
+	// Updating date for the transaction
+	dates := ProductDates{}
+	json.Unmarshal(product.Date, &dates)
+
+	//To Get the transaction TimeStamp from the Channel Header
+	txTimeAsPtr, errTx := t.GetTxTimestampChannel(APIstub)
+	if errTx != nil {
+		return shim.Error("Returning error in Transaction TimeStamp")
+	}
+
+	dates.SellToConsumerDate = txTimeAsPtr
+	datesAsBytes, errMarshal := json.Marshal(dates)
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error: %s", errMarshal))
+	}
+
+	// Updating the product values to be updated after the function
+	product.Consumer_ID = user.User_ID
+	product.Date = datesAsBytes
+	product.Status = "Delivered"
+	updatedProductAsBytes, errMarshal := json.Marshal(dates)
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error: %s", errMarshal))
+	}
+
+	errPut := APIstub.PutState(product.Product_ID, updatedProductAsBytes)
+	if errPut != nil {
+		return shim.Error(fmt.Sprintf("Failed to Sell To Cosumer : %s", product.Product_ID))
+	}
+
+	fmt.Println("Success in sending Product %v ", product.Product_ID)
+	return shim.Success(nil)
 }
