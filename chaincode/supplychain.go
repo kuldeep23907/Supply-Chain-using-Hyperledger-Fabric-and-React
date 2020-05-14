@@ -25,7 +25,6 @@ type User struct {
 	Address string `json:"Address"`
 } 
 
-
 type ProductDates struct {
 	ManufactureDate  string `json:"ManufactureDate"` 
 	SendToWholesalerDate  string `json:"SendToWholesalerDate"` 
@@ -48,7 +47,6 @@ type Product struct {
 	Date ProductDates `json:"Date"` 	
 	Price float64 `json:"Price"` 
 }  
-
 	
 // =================================================================================== // Main // =================================================================================== 
 
@@ -128,6 +126,73 @@ func incrementCounter(APIstub shim.ChaincodeStubInterface, AssetType string) int
 
 	}
 	return counterAsset.Counter
+}
+
+// send to retailer
+func (t *food_supplychain) sendToRetailer(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
+	if len(args) != 2 {
+		return shim.Error("Less no of arguments provided")
+	}
+
+	if len(args[1]) == 0 {
+		return shim.Error("ProductId must be specified")
+	}
+
+	if len(args[2]) == 0 {
+		return shim.Error("RetailerId must be specified")
+	}
+
+	userBytes, _ := APIstub.GetState(args[2])
+	if userBytes == nil {
+		return shim.Error("Could not find the retailer")
+	}
+
+	user := User{}
+	json.Unmarshal(userBytes, &user)
+	if user.User_Type != "retailer" {
+		return shim.Error("User must be a retailer")
+	}
+
+	productBytes, _ := APIstub.GetState(args[1])
+	if productBytes == nil {
+		return shim.Error("Could not find the product")
+	}
+
+	product := Product{}
+	json.Unmarshal(productBytes, &product)
+	if product.Retailer_ID != nil {
+		return shim.Error("Product has already been sent to retailer")
+	}
+
+	dates := ProductDates{}
+	json.Unmarshal(product.Date, &dates)
+
+	// get the transaction timestamp from the channel header
+	txTimeAsPtr, errTx := t.GetTxTimestampChannel(APIstub)
+	if errTx != nil {
+		return shim.Error("Error while retrieving transaction timestamp")
+	}
+
+	dates.SendToRetailerDate = txTimeAsPtr
+	datesAsBytes, errMarshal := json.Marshal(dates)
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal error: %s", errMarshal))
+	}
+
+	product.Retailer_ID = User_ID
+	product.Date = datesAsBytes
+	updatedProductAsBytes, errMarshal := json.Marshal(dates)
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal error: %s", errMarshal))
+	}
+
+	errPut := APIstub.PutState(product.Product_ID, updatedProductAsBytes)
+	if errPut != nil {
+		return shim.Error(fmt.Sprintf("Failed to send to retailer: %s", product.Product_ID))
+	}
+
+	fmt.Println("Sent product %v to retailer successfully", product.Product_ID)
+	return shim.Success(nil)
 }
 
 // send to distributor
@@ -232,6 +297,14 @@ func (t *food_supplychain) GetTxTimestampChannel(APIstub shim.ChaincodeStubInter
 	return timeStr, nil
 }
 
+func (t *food_supplychain) queryProduct(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expected 1 argument")
+	}
+
+	productAsBytes, _ := APIstub.GetState(args[0])
+	return shim.Success(productAsBytes)
+}
 
 // query all 
 func (t *food_supplychain) queryAll(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
