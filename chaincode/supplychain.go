@@ -463,3 +463,77 @@ func sellToConsumer(APIstub shim.ChaincodeStubInterface,args[] string) pb.Respon
 	fmt.Println("Success in sending Product %v ", product.Product_ID)
 	return shim.Success(nil)
 }
+
+
+// function to update the product name and price
+// Input params : product id , user id , product name , preduct price
+func updateProduct(APIstub shim.ChaincodeStubInterface,args[] string) pb.Response{
+
+	// parameter length check
+	if len(args) != 4 {
+		return shim.Error("Incorrect number of arguments, Required 4")
+	}
+
+	// parameter null check
+	if len(args[0]) == 0 {
+		return shim.Error("Product Id must be provided");
+	}
+
+	if len(args[1]) == 0 {
+		return shim.Error("User Id must be provided");
+	}
+
+	if len(args[2]) == 0 {
+		return shim.Error("Product Name must be provided");
+	}
+
+	if len(args[3]) == 0 {
+		return shim.Error("Product Price must be provided");
+	}
+
+
+	// get user details from the stub ie. Chaincode stub in network using the user id passed
+	userBytes, _ := APIstub.GetState(args[1])
+
+	if userBytes == nil {
+		return shim.Error("Cannot Find User")
+	}
+
+	user := User{}
+
+	// unmarsahlling product the data from API
+	json.Unmarshal(userBytes, &user)
+
+	// User type check for the function
+	if user.User_Type == "consumer" {
+		return shim.Error("User type cannot be Consumer")
+	}
+
+	// get product details from the stub ie. Chaincode stub in network using the product id passed
+	productBytes, _ := APIstub.GetState(args[0])
+	if productBytes == nil {
+		return shim.Error("Cannot Find Product")
+	}
+	product := Product{}
+
+	// unmarsahlling product the data from API
+	json.Unmarshal(productBytes, &product)
+
+	// Updating the product values withe the new values
+	product.Name = args[2] // product name from UI for the update
+	product.Price = args[3] // product value from UI for the update
+
+	updatedProductAsBytes, errMarshal := json.Marshal(dates)
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error: %s", errMarshal))
+	}
+
+	errPut := APIstub.PutState(product.Product_ID, updatedProductAsBytes)
+	if errPut != nil {
+		return shim.Error(fmt.Sprintf("Failed to Sell To Cosumer : %s", product.Product_ID))
+	}
+
+	fmt.Println("Success in sending Product %v ", product.Product_ID)
+	return shim.Success(nil)
+
+}
