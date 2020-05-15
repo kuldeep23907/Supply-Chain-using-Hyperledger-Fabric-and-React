@@ -59,9 +59,37 @@ func main() {
 
 // Init initializes chaincode // ===========================
 
-func (t *food_supplychain) Init(stub shim.ChaincodeStubInterface) pb.Response
-{ 	return shim.Success(nil) }
-
+func (t *food_supplychain) Init(stub shim.ChaincodeStubInterface) pb.Response{ 	
+	// Initializing Product Counter
+	ProductCounterBytes, _ := APIstub.GetState("ProductCounterNO")
+	if ProductCounterBytes == nil {
+		var ProductCounter = CounterNO{Counter: 0}
+		ProductCounterBytes, _ := json.Marshal(ProductCounter)
+		err := APIstub.PutState("ProductCounterNO", ProductCounterBytes)
+		if err != nil {
+			return shim.Error(fmt.Sprintf("Failed to Intitate Product Counter"))
+		}
+	}
+  // Initializing Order Counter
+	OrderCounterBytes, _ := APIstub.GetState("OrderCounterNO")
+	if OrderCounterBytes == nil {
+		var OrderCounter = CounterNO{Counter: 0}
+		OrderCounterBytes, _ := json.Marshal(OrderCounter)
+		err := APIstub.PutState("OrderCounterNO", OrderCounterBytes)
+		if err != nil {
+			return shim.Error(fmt.Sprintf("Failed to Intitate Order Counter"))
+		} 
+	}
+	UserCounterBytes, _ := APIstub.GetState("UserCounterNO")
+	if UserCounterBytes == nil {
+		var UserCounter = CounterNO{Counter: 0}
+		UserCounterBytes, _ := json.Marshal(UserCounter)
+		err := APIstub.PutState("UserCounterNO", UserCounterBytes)
+		if err != nil {
+			return shim.Error(fmt.Sprintf("Failed to Intitate User Counter"))
+		} 
+	}
+}
 // Invoke - Our entry point for Invocations // ========================================
 
 func (t *food_supplychain) Invoke(stub shim.ChaincodeStubInterface) pb.Response
@@ -677,4 +705,116 @@ func updateProduct(APIstub shim.ChaincodeStubInterface,args[] string) pb.Respons
 	fmt.Println("Success in sending Product %v ", product.Product_ID)
 	return shim.Success(nil)
 
+}
+
+func orderProduct(APIstub shim.ChaincodeStubInterface,args[] string) pb.Response{
+	// parameter length check
+	if len(args) != 2 {
+		return shim.Error("Incorrect number of arguments, Required 4")
+	}
+
+	// parameter null check
+	if len(args[0]) == 0 {
+		return shim.Error("Consumer Id must be provided");
+	}
+
+	if len(args[1]) == 0 {
+		return shim.Error("Product Id must be provided");
+	}
+
+	userBytes, _ := APIstub.GetState(args[0])
+
+	if userBytes == nil {
+		return shim.Error("Cannot Find Consumer")
+	}
+
+	user := User{}
+
+	// unmarsahlling product the data from API
+	json.Unmarshal(userBytes, &user)
+
+	// User type check for the function
+	if user.User_Type == "consumer" {
+		return shim.Error("User type cannot be Consumer")
+	}
+
+	productBytes, _ := APIstub.GetState(args[1])
+	if productBytes == nil {
+		return shim.Error("Cannot Find Product")
+	}
+	product := Product{}
+
+	// unmarsahlling product the data from API
+	json.Unmarshal(productBytes, &product)
+
+
+	orderCounter := getCounter(APIstub,"OrderCounterNO")
+	orderCounter++
+
+	product.Order_ID = "Order" + strconv.Itoa(orderCounter) 
+	product.Consumer_ID = args[1] 
+	product.Status = "Ordered"
+
+	updatedProductAsBytes, errMarshal := json.Marshal(dates)
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error: %s", errMarshal))
+	}
+
+	incrementCounter(APIstub,"OrderCounterNO")
+
+	errPut := APIstub.PutState(product.Product_ID, updatedProductAsBytes)
+	if errPut != nil {
+		return shim.Error(fmt.Sprintf("Failed to place the order : %s", product.Product_ID))
+	}
+
+	fmt.Println("Order placed successfuly %v ", product.Product_ID)
+	return shim.Success(nil)
+}
+
+func (t *food_supplychain) createUser(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
+
+	if len(args) != 4 {
+		return shim.Error("Incorrect number of arguments, Required 4 arguments")
+	}
+
+	if len(args[0]) == 0 {
+		return shim.Error("Name must be provided to register user")
+	}
+
+	if len(args[1]) == 0 {
+		return shim.Error("Email is mandatory")
+	}
+  
+	if len(args[2]) == 0 {
+		return shim.Error("User type must be specified")
+	}
+
+	if len(args[3]) == 0 {
+		return shim.Error("Address must be non-empty ")
+	}
+
+	userCounter := getCounter(APIstub,"UserCounterNO")
+	userCounter++
+
+	var comAsset = User{Name: args[0], User_ID: "User" + strconv.Itoa(userCounter), Email: args[1], User_Type: args[2], Address: args[3]}
+	
+	comAssetAsBytes, errMarshal := json.Marshal(comAsset)
+   
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error in Product: %s", errMarshal))
+	}
+  
+	errPut := APIstub.PutState(comAsset.Product_Id, comAssetAsBytes)
+  
+	if errPut != nil {
+		return shim.Error(fmt.Sprintf("Failed to register user: %s", comAsset.Product_Id))
+	}
+  
+	//TO Increment the Product Counter
+	incrementCounter(APIstub,"UserCounterNO")
+  
+	fmt.Println("User register successfully %v",comAsset)
+  
+	return shim.Success(nil)
+  
 }
