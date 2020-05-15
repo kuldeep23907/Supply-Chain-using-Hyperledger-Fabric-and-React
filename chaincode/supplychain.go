@@ -128,6 +128,147 @@ func incrementCounter(APIstub shim.ChaincodeStubInterface, AssetType string) int
 	return counterAsset.Counter
 }
 
+func (t *food_supplychain) createProduct(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
+ 
+	//To check number of arguments are 11
+	if len(args) != 3 {
+		return shim.Error("Incorrect number of arguments, Required 4 arguments")
+	}
+
+	if len(args[1]) == 0 {
+		return shim.Error("Name must be provided to create a product")
+	}
+
+	if len(args[2]) == 0 {
+		return shim.Error("Manufacturer_ID must be provided")
+	}
+  
+	if len(args[3]) == 0 {
+		return shim.Error("Price must be non-empty ")
+	}
+
+	//Price conversion - Error handeling 
+	i1, errPrice := strconv.ParseFloat(args[3], 64)
+	if errPrice != nil {
+		return shim.Error(fmt.Sprintf("Failed to Convert Price: %s", errPrice))
+		//fmt.Println(i1)
+	}
+
+	productCounter := getCounter(APIstub,"ProductCounterNO")
+	productCounter++
+	
+	// DATES
+	dates := ProductDates{}
+	json.Unmarshal(product.Date, &dates)
+
+	//To Get the transaction TimeStamp from the Channel Header
+	txTimeAsPtr, errTx := t.GetTxTimestampChannel(APIstub)
+	if errTx != nil {
+		return shim.Error("Returning error in Transaction TimeStamp")
+	}
+
+	dates.ManufactureDate = txTimeAsPtr
+
+	var comAsset = Product{Product_Id: "Product" + strconv.Itoa(productCounter), Order_ID: nil, Name: args[1], Consumer_ID: nil, Manufacturer_ID: args[2], Retailer_ID: nil, Distributer_ID: nil, Wholesaler_ID: nil, Status: "Available", Date: dates.ManufactureDate, Product_Price: i1}
+	
+	comAssetAsBytes, errMarshal := json.Marshal(comAsset)
+   
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error in Product: %s", errMarshal))
+	}
+  
+	errPut := APIstub.PutState(comAsset.Product_Id, comAssetAsBytes)
+  
+	if errPut != nil {
+		return shim.Error(fmt.Sprintf("Failed to create Product Asset: %s", comAsset.Product_Id))
+	}
+  
+	//TO Increment the Product Counter
+	incrementCounter(APIstub,"ProductCounterNO")
+  
+	fmt.Println("Success in creating Product Asset %v",comAsset)
+  
+	return shim.Success(nil)
+  
+}
+
+// send to Wholesaler
+func (t *food_supplychain) sendToWholesaler(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
+
+	if len(args) != 2 {
+		return shim.Error("Less no of arguements provided");
+	}
+
+	if len(args[1]) == 0 {
+		return shim.Error("Product Id must be provided");
+	}
+
+	if len(args[2]) == 0 {
+		return shim.Error("Wholesaler Id must be provided");
+	}
+
+	userBytes, _ := APIstub.GetState(args[2])
+
+	if userBytes == nil {
+		return shim.Error("Cannot Find Wholesaler user")
+	}
+
+	user := User{}
+
+	json.Unmarshal(userBytes, &user)
+
+	if user.User_Type != "wholesaler" {
+		return shim.Error("User type must be Wholesaler")
+	}
+
+
+	productBytes, _ := APIstub.GetState(args[1])
+
+	if productBytes == nil {
+		return shim.Error("Cannot Find Product")
+	}
+
+	product := Product{}
+
+	json.Unmarshal(productBytes, &product)
+
+	if product.Wholesaler_ID != nil {
+		return shim.Error("Product is send to Wholesaler already")
+	}
+
+	dates := ProductDates{}
+	json.Unmarshal(product.Date, &dates)
+
+	//To Get the transaction TimeStamp from the Channel Header
+	txTimeAsPtr, errTx := t.GetTxTimestampChannel(APIstub)
+	if errTx != nil {
+		return shim.Error("Returning error in Transaction TimeStamp")
+	}
+
+	dates.SendToWholesalerDate = txTimeAsPtr
+	datesAsBytes, errMarshal := json.Marshal(dates)
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error: %s", errMarshal))
+	}
+
+	product.Wholesaler_ID = user.User_ID
+	product.Date = datesAsBytes
+	updatedProductAsBytes, errMarshal := json.Marshal(dates)
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error: %s", errMarshal))
+	}
+
+	errPut := APIstub.PutState(product.Product_ID, updatedProductAsBytes)
+	if errPut != nil {
+		return shim.Error(fmt.Sprintf("Failed to Send to Wholesaler: %s", product.Product_ID))
+	}
+
+	fmt.Println("Success in sending Product %v ", product.Product_ID)
+	return shim.Success(nil)
+}
+
+
+
 // send to retailer
 func (t *food_supplychain) sendToRetailer(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
 	if len(args) != 2 {
