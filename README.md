@@ -4,46 +4,162 @@ This projects keeps track record of any product starting from manufacturer to cu
 
 # Steps to up the network
 
-## Goto artifacts folder first and make the following directories
 
-mkdir channel-artifacts
+1. generate certificates
 
-mkdir crypto-config
-
-## 1. generate certificates
-
-../../bin/cryptogen generate --config=./crypto-config.yaml
+../bin/cryptogen generate --config=./artifacts/crypto-config.yaml --output=./artifacts/network/crypto-config
 
 
-## 2. export
+2. export
 
-export FABRIC_CFG_PATH=$PWD
+export FABRIC_CFG_PATH=${PWD}/artifacts
 
-## 3. generate the genesis block
+3. generate the genesis block
 
-../../bin/configtxgen -profile TraceOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
+../bin/configtxgen -profile TraceOrdererGenesis -outputBlock ./artifacts/network/genesis.block
 
-## 4. export channel name
+4. export channel name
 
 export CHANNEL_NAME=supplychainchannel
 
-## 5. generate the channel transaction file
+5. generate the channel transaction file
 
-../../bin/configtxgen -profile TraceOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+../bin/configtxgen -profile TraceOrgsChannel -outputCreateChannelTx ./artifacts/network/channel.tx -channelID $CHANNEL_NAME
 
-## 6. update anchor peers
+6. update anchor peers
 
-../../bin/configtxgen -profile TraceOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/ManufacturerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ManufacturerMSP
+../bin/configtxgen -profile TraceOrgsChannel -outputAnchorPeersUpdate ./artifacts/network/ManufacturerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ManufacturerMSP
 
-../../bin/configtxgen -profile TraceOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/MiddleMenMSPanchors.tx -channelID $CHANNEL_NAME -asOrg MiddleMenMSP
+../bin/configtxgen -profile TraceOrgsChannel -outputAnchorPeersUpdate ./artifacts/network/MiddleMenMSPanchors.tx -channelID $CHANNEL_NAME -asOrg MiddleMenMSP
 
-../../bin/configtxgen -profile TraceOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/ConsumerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ConsumerMSP
+../bin/configtxgen -profile TraceOrgsChannel -outputAnchorPeersUpdate ./artifacts/network/ConsumerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ConsumerMSP
 
-## 7. up the network
+7. up the network
 
-docker-compose -f docker-compose.yaml up -d
+export MANUFACTURER_CA_PRIVATE_KEY=$(cd ./artifacts/network/crypto-config/peerOrganizations/manufacturer.example.com/ca && ls *_sk)
+export MIDDLEMEN_CA_PRIVATE_KEY=$(cd ./artifacts/network/crypto-config/peerOrganizations/middlemen.example.com/ca && ls *_sk)
+export CONSUMER_CA_PRIVATE_KEY=$(cd ./artifacts/network/crypto-config/peerOrganizations/consumer.example.com/ca && ls *_sk)
 
-## 8. down the network
+docker-compose -f artifacts/docker-compose.yaml up -d
 
-docker-compose -f docker-compose.yaml down -v
+8. get into CLI 
 
+docker exec -it cli bash
+
+9. export channel name
+
+export CHANNEL_NAME=supplychainchannel
+
+10. craete channel
+
+peer channel create -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx --tls $CORE_PEER_TLS_ENABLED --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+11. peer 0 manufacturer join channel
+
+peer channel join -b supplychainchannel.block
+
+12. peer 0 middlemen join channel
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/middlemen.example.com/users/Admin@middlemen.example.com/msp
+CORE_PEER_ADDRESS=peer0.middlemen.example.com:8051
+CORE_PEER_LOCALMSPID="MiddleMenMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/middlemen.example.com/peers/peer0.middlemen.example.com/tls/ca.crt peer channel join -b $CHANNEL_NAME.block
+
+peer 1 middlemen join channel 
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/middlemen.example.com/users/Admin@middlemen.example.com/msp
+CORE_PEER_ADDRESS=peer1.middlemen.example.com:9051
+CORE_PEER_LOCALMSPID="MiddleMenMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/middlemen.example.com/peers/peer1.middlemen.example.com/tls/ca.crt peer channel join -b $CHANNEL_NAME.block
+
+peer 2 middlemen join channel
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/middlemen.example.com/users/Admin@middlemen.example.com/msp
+CORE_PEER_ADDRESS=peer2.middlemen.example.com:10051
+CORE_PEER_LOCALMSPID="MiddleMenMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/middlemen.example.com/peers/peer2.middlemen.example.com/tls/ca.crt peer channel join -b $CHANNEL_NAME.block
+
+peer 0 consumer join channel
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/consumer.example.com/users/Admin@consumer.example.com/msp
+CORE_PEER_ADDRESS=peer0.consumer.example.com:11051
+CORE_PEER_LOCALMSPID="ConsumerMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/tls/ca.crt peer channel join -b $CHANNEL_NAME.block
+
+13. update anchor peers
+
+peer 0 manufacturer
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/manufacturer.example.com/users/Admin@manufacturer.example.com/msp
+CORE_PEER_ADDRESS=peer0.manufacturer.example.com:7051
+CORE_PEER_LOCALMSPID="ManufacturerMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls/ca.crt
+peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/ManufacturerMSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+peer 0 middlemen
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/middlemen.example.com/users/Admin@middlemen.example.com/msp
+CORE_PEER_ADDRESS=peer0.middlemen.example.com:8051
+CORE_PEER_LOCALMSPID="MiddleMenMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/middlemen.example.com/peers/peer0.middlemen.example.com/tls/ca.crt
+peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/MiddleMenMSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+peer 0 consumer
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/consumer.example.com/users/Admin@consumer.example.com/msp
+CORE_PEER_ADDRESS=peer0.consumer.example.com:11051
+CORE_PEER_LOCALMSPID="ConsumerMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/tls/ca.crt
+peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/ConsumerMSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+14. install chaincode
+
+peer 0 manufacturer
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/manufacturer.example.com/users/Admin@manufacturer.example.com/msp
+CORE_PEER_ADDRESS=peer0.manufacturer.example.com:7051
+CORE_PEER_LOCALMSPID="ManufacturerMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls/ca.crt
+peer chaincode install -n supplychaincc -v 1.0 -p github.com/chaincode/
+
+15. instantiate or upgrade chaincode
+
+peer chaincode instantiate -o orderer.example.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -l golang -v 1.0 -c '{"Args":[""]}' -P "OR ('ManufacturerMSP.peer','MiddleMenMSP.peer', 'ConsumerMSP.peer')"
+
+peer chaincode upgrade -o orderer.example.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -l golang -v 1.2 -c '{"Args":[""]}' -P "OR ('ManufacturerMSP.peer','MiddleMenMSP.peer', 'ConsumerMSP.peer')"
+
+16. invoke chaincode
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["createUser","kuldeep1","kk@asdf.asdf","manufacturer","rajapur"]}'
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["createUser","kuldeep2","kk@asdf.asdf","wholesaler","rajapur"]}'
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["createUser","kuldeep3","kk@asdf.asdf","distributor","rajapur"]}'
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["createUser","kuldeep4","kk@asdf.asdf","retailer","rajapur"]}'
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["createUser","kuldeep4","kk@asdf.asdf","consumer","rajapur"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["createProduct","Kohinoor diamond","User1","1000"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["updateProduct","Product1","User1","Kohinoor heera","1500"]}'
+ 
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["queryAsset","Product1"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["sendToWholesaler","Product1","User2"]}'
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["sendToDistributer","Product1","User3"]}'
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["sendToRetailer","Product1","User4"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["orderProduct","User5","Product1"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["sellToConsumer","Product1"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["deliveredProduct","Product1"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["queryAsset","Product1"]}'
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n supplychaincc -c '{"Args":["queryAll","User"]}'
+
+17. down the network
+
+docker-compose -f artifacts/docker-compose.yaml down -v
+sudo rm -fR artifacts/network/
+docker kill $(docker ps -aq)
+docker rm $(docker ps -aq)
+docker ps
