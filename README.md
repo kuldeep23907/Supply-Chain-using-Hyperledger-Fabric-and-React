@@ -184,7 +184,11 @@ peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopat
 #### 17. down the network
 
 docker-compose -f artifacts/docker-compose.yaml down -v
+
 sudo rm -fR artifacts/network/
+
 docker kill $(docker ps -aq)
+
 docker rm $(docker ps -aq)
+
 docker ps
