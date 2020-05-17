@@ -25,7 +25,7 @@
             ID: OrdererMSP
     
             # MSPDir is the filesystem path which contains the MSP configuration
-            MSPDir: crypto-config/ordererOrganizations/example.com/msp
+            MSPDir: ./network/crypto-config/ordererOrganizations/example.com/msp
     
             # Policies defines the set of policies at this level of the config tree
             # For organization policies, their canonical path is usually
@@ -49,7 +49,7 @@
             # ID to load the MSP definition as
             ID: ManufacturerMSP
     
-            MSPDir: crypto-config/peerOrganizations/manufacturer.example.com/msp
+            MSPDir: ./network/crypto-config/peerOrganizations/manufacturer.example.com/msp
     
             # Policies defines the set of policies at this level of the config tree
             # For organization policies, their canonical path is usually
@@ -81,7 +81,7 @@
             # ID to load the MSP definition as
             ID: MiddleMenMSP
     
-            MSPDir: crypto-config/peerOrganizations/middlemen.example.com/msp
+            MSPDir: ./network/crypto-config/peerOrganizations/middlemen.example.com/msp
     
             # Policies defines the set of policies at this level of the config tree
             # For organization policies, their canonical path is usually
@@ -114,7 +114,7 @@
             # ID to load the MSP definition as
             ID: ConsumerMSP
     
-            MSPDir: crypto-config/peerOrganizations/consumer.example.com/msp
+            MSPDir: ./network/crypto-config/peerOrganizations/consumer.example.com/msp
     
             # Policies defines the set of policies at this level of the config tree
             # For organization policies, their canonical path is usually
@@ -137,7 +137,7 @@
                 # for cross org gossip communication.  Note, this value is only
                 # encoded in the genesis block in the Application section context
                 - Host: peer0.consumer.example.com
-                  Port: 9051
+                  Port: 11051
     
     ################################################################################
     #
@@ -389,6 +389,7 @@
                     - *Manufacturer
                     - *MiddleMen
                     - *Consumer
+                    
         TraceOrgsChannel:
             Consortium: SampleConsortium
             <<: *ChannelDefaults

@@ -13,9 +13,9 @@ services:
       file: peer-base.yaml
       service: orderer-base
     volumes:
-        - ../channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
-        - ../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
-        - ../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls
+        - ../network/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ../network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
+        - ../network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls
         - orderer.example.com:/var/hyperledger/production/orderer
     ports:
       - 7050:7050
@@ -36,8 +36,8 @@ services:
       - CORE_PEER_LOCALMSPID=ManufacturerMSP
     volumes:
         - /var/run/:/host/var/run/
-        - ../crypto-config/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/msp:/etc/hyperledger/fabric/msp
-        - ../crypto-config/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls:/etc/hyperledger/fabric/tls
+        - ../network/crypto-config/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/msp:/etc/hyperledger/fabric/msp
+        - ../network/crypto-config/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/tls:/etc/hyperledger/fabric/tls
         - peer0.manufacturer.example.com:/var/hyperledger/production
     ports:
       - 7051:7051
@@ -55,11 +55,11 @@ services:
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.middlemen.example.com:8051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.middlemen.example.com:9051
-      - CORE_PEER_LOCALMSPID=MiddlemenMSP
+      - CORE_PEER_LOCALMSPID=MiddleMenMSP
     volumes:
         - /var/run/:/host/var/run/
-        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer0.middlemen.example.com/msp:/etc/hyperledger/fabric/msp
-        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer0.middlemen.example.com/tls:/etc/hyperledger/fabric/tls
+        - ../network/crypto-config/peerOrganizations/middlemen.example.com/peers/peer0.middlemen.example.com/msp:/etc/hyperledger/fabric/msp
+        - ../network/crypto-config/peerOrganizations/middlemen.example.com/peers/peer0.middlemen.example.com/tls:/etc/hyperledger/fabric/tls
         - peer0.middlemen.example.com:/var/hyperledger/production
     ports:
       - 8051:8051
@@ -77,11 +77,11 @@ services:
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.middlemen.example.com:9051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.middlemen.example.com:10051
-      - CORE_PEER_LOCALMSPID=MiddlemenMSP
+      - CORE_PEER_LOCALMSPID=MiddleMenMSP
     volumes:
         - /var/run/:/host/var/run/
-        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer1.middlemen.example.com/msp:/etc/hyperledger/fabric/msp
-        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer1.middlemen.example.com/tls:/etc/hyperledger/fabric/tls
+        - ../network/crypto-config/peerOrganizations/middlemen.example.com/peers/peer1.middlemen.example.com/msp:/etc/hyperledger/fabric/msp
+        - ../network/crypto-config/peerOrganizations/middlemen.example.com/peers/peer1.middlemen.example.com/tls:/etc/hyperledger/fabric/tls
         - peer1.middlemen.example.com:/var/hyperledger/production
     ports:
       - 9051:9051
@@ -99,11 +99,11 @@ services:
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:10052
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.middlemen.example.com:10051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.middlemen.example.com:9051
-      - CORE_PEER_LOCALMSPID=MiddlemenMSP
+      - CORE_PEER_LOCALMSPID=MiddleMenMSP
     volumes:
         - /var/run/:/host/var/run/
-        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer2.middlemen.example.com/msp:/etc/hyperledger/fabric/msp
-        - ../crypto-config/peerOrganizations/middlemen.example.com/peers/peer2.middlemen.example.com/tls:/etc/hyperledger/fabric/tls
+        - ../network/crypto-config/peerOrganizations/middlemen.example.com/peers/peer2.middlemen.example.com/msp:/etc/hyperledger/fabric/msp
+        - ../network/crypto-config/peerOrganizations/middlemen.example.com/peers/peer2.middlemen.example.com/tls:/etc/hyperledger/fabric/tls
         - peer2.middlemen.example.com:/var/hyperledger/production
     ports:
       - 10051:10051
@@ -124,8 +124,8 @@ services:
         - CORE_PEER_LOCALMSPID=ConsumerMSP
       volumes:
           - /var/run/:/host/var/run/
-          - ../crypto-config/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/msp:/etc/hyperledger/fabric/msp
-          - ../crypto-config/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/tls:/etc/hyperledger/fabric/tls
+          - ../network/crypto-config/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/msp:/etc/hyperledger/fabric/msp
+          - ../network/crypto-config/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/tls:/etc/hyperledger/fabric/tls
           - peer0.consumer.example.com:/var/hyperledger/production
       ports:
         - 11051:11051
