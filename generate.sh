@@ -7,8 +7,7 @@ export PATH=$GOPATH/src/github.com/hyperledger/fabric/build/bin:${PWD}/../bin:${
 export FABRIC_CFG_PATH=${PWD}/artifacts
 export CHANNEL_NAME=supplychainchannel
 # remove previous crypto material and config transactions
-rm -fr ../artifacts/config/*
-rm -fr ../artifacts/crypto-config/*
+rm -fr ../artifacts/network
 echo ""
 
 echo "===================================== Generating crypto material ==================================================="
