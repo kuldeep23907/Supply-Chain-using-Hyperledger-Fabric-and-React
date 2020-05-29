@@ -782,7 +782,7 @@ func (t *food_supplychain) queryAll(APIstub shim.ChaincodeStubInterface, args []
 	assetType := args[0]
 	assetCounter := getCounter(APIstub, assetType+"CounterNO")
 
-	startKey := assetType + "0"
+	startKey := assetType + "1"
 	endKey := assetType + strconv.Itoa(assetCounter+1)
 
 	resultsIterator, err := APIstub.GetStateByRange(startKey, endKey)
