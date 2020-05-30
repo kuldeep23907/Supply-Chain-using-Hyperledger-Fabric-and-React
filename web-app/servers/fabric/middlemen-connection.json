@@ -1,0 +1,90 @@
+{
+    "name": "supplychainchannel",
+    "description": "Connection Profile",
+    "version": "1.0",
+    "client": {
+        "organization": "MiddleMen",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    },
+    "channels": {
+        "loyaltyplatformchannel": {
+            "orderers": ["orderer.example.com"],
+            "peers": {
+                "peer0.middlemen.example.com": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
+                    "eventSource": true
+                }
+            }
+        }
+    },
+    "organizations": {
+        "MiddleMen": {
+            "mspid": "MiddleMenMSP",
+            "peers": ["peer0.middlemen.example.com"],
+            "certificateAuthorities": ["ca.middlemen.example.com"]
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpcs://localhost:7050",
+            "grpcOptions": {
+                "ssl-target-name-override": "orderer.example.com"
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
+            }
+        }
+    },
+    "peers": {
+        "peer0.middlemen.example.com": {
+            "url": "grpcs://localhost:8051",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.middlemen.example.com"
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/peerOrganizations/middlemen.example.com/peers/peer0.middlemen.example.com/msp/tlscacerts/tlsca.middlemen.example.com-cert.pem"
+            }
+        },
+        "peer1.middlemen.example.com": {
+            "url": "grpcs://localhost:9051",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer1.middlemen.example.com"
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/peerOrganizations/middlemen.example.com/peers/peer1.middlemen.example.com/msp/tlscacerts/tlsca.middlemen.example.com-cert.pem"
+            }
+        },
+        "peer2.middlemen.example.com": {
+            "url": "grpcs://localhost:10051",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer2.middlemen.example.com"
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/peerOrganizations/middlemen.example.com/peers/peer2.middlemen.example.com/msp/tlscacerts/tlsca.middlemen.example.com-cert.pem"
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.middlemen.example.com": {
+            "url": "https://localhost:8054",
+            "caName": "ca.middlemen.example.com",
+            "httpOptions": {
+                "verify": false
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/peerOrganizations/middlemen.example.com/ca/ca.middlemen.example.com-cert.pem"
+            }
+        }
+    }
+}

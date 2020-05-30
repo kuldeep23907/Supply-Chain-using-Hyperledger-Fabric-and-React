@@ -1,12 +1,12 @@
 {
-    "name": "loyaltyplatform-server",
+    "name": "supplychain-server",
     "version": "1.0.0",
     "description": "hyperledger fabric app with js backend",
     "main": "app.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "author": "Kuldeep K Srivastava",
+    "author": "Batch 5",
     "license": "ISC",
     "dependencies": {
         "body-parser": "^1.19.0",

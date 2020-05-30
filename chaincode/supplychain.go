@@ -24,6 +24,7 @@ type User struct {
 	Email     string `json:"Email"`
 	User_Type string `json:"UserType"`
 	Address   string `json:"Address"`
+	Password  string `json:"Password"`
 }
 
 type ProductDates struct {
@@ -62,6 +63,23 @@ func main() {
 // Init initializes chaincode // ===========================
 
 func (t *food_supplychain) Init(APIstub shim.ChaincodeStubInterface) pb.Response {
+
+	// seed admin
+	entityUser := User{Name: "admin", User_ID: "admin", Email: "admin@pg.com", User_Type: "admin", Address: "bangalore", Password: "adminpw"}
+	entityUserAsBytes, errMarshal := json.Marshal(entityUser)
+
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error in Product: %s", errMarshal))
+	}
+
+	errPut := APIstub.PutState(entityUser.User_ID, entityUserAsBytes)
+
+	if errPut != nil {
+		return shim.Error(fmt.Sprintf("Failed to create Entity Asset: %s", entityUser.User_ID))
+	}
+
+	fmt.Println("Added", entityUser)
+
 	// Initializing Product Counter
 	ProductCounterBytes, _ := APIstub.GetState("ProductCounterNO")
 	if ProductCounterBytes == nil {
@@ -103,7 +121,10 @@ func (t *food_supplychain) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
-	if function == "createUser" {
+	if function == "signIn" {
+		//login user
+		return t.signIn(stub, args)
+	} else if function == "createUser" {
 		//create a new user
 		return t.createUser(stub, args)
 	} else if function == "createProduct" {
@@ -189,10 +210,42 @@ func (t *food_supplychain) GetTxTimestampChannel(APIstub shim.ChaincodeStubInter
 	return timeStr, nil
 }
 
+//sign in
+func (t *food_supplychain) signIn(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
+
+	if len(args) != 2 {
+		return shim.Error("Incorrect number of arguments. Expected 2 argument")
+	}
+
+	if len(args[0]) == 0 {
+		return shim.Error("User ID must be provided")
+	}
+
+	if len(args[1]) == 0 {
+		return shim.Error("Password must be provided")
+	}
+
+	entityUserBytes, _ := APIstub.GetState(args[0])
+	if entityUserBytes == nil {
+		return shim.Error("Cannot Find Entity")
+	}
+	entityUser := User{}
+	// unmarsahlling the entity data
+	json.Unmarshal(entityUserBytes, &entityUser)
+
+	// check if password matched
+	if entityUser.Password != args[1] {
+		return shim.Error("Either id or password is wrong")
+	}
+
+	return shim.Success(entityUserBytes)
+}
+
+//create user
 func (t *food_supplychain) createUser(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
 
-	if len(args) != 4 {
-		return shim.Error("Incorrect number of arguments, Required 4 arguments")
+	if len(args) != 5 {
+		return shim.Error("Incorrect number of arguments, Required 5 arguments")
 	}
 
 	if len(args[0]) == 0 {
@@ -211,10 +264,14 @@ func (t *food_supplychain) createUser(APIstub shim.ChaincodeStubInterface, args 
 		return shim.Error("Address must be non-empty ")
 	}
 
+	if len(args[4]) == 0 {
+		return shim.Error("Password must be non-empty ")
+	}
+
 	userCounter := getCounter(APIstub, "UserCounterNO")
 	userCounter++
 
-	var comAsset = User{Name: args[0], User_ID: "User" + strconv.Itoa(userCounter), Email: args[1], User_Type: args[2], Address: args[3]}
+	var comAsset = User{Name: args[0], User_ID: "User" + strconv.Itoa(userCounter), Email: args[1], User_Type: args[2], Address: args[3], Password: args[4]}
 
 	comAssetAsBytes, errMarshal := json.Marshal(comAsset)
 
@@ -233,7 +290,7 @@ func (t *food_supplychain) createUser(APIstub shim.ChaincodeStubInterface, args 
 
 	fmt.Println("User register successfully %v", comAsset)
 
-	return shim.Success(nil)
+	return shim.Success(comAssetAsBytes)
 
 }
 

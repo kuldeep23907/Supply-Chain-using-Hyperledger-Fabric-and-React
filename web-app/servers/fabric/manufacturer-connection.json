@@ -1,0 +1,72 @@
+{
+    "name": "supplychainchannel",
+    "description": "Connection Profile",
+    "version": "1.0",
+    "client": {
+        "organization": "Manufacturer",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    },
+    "channels": {
+        "loyaltyplatformchannel": {
+            "orderers": ["orderer.example.com"],
+            "peers": {
+                "peer0.manufacturer.example.com": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
+                    "eventSource": true
+                }
+            }
+        }
+    },
+    "organizations": {
+        "Manufacturer": {
+            "mspid": "ManufacturerMSP",
+            "peers": ["peer0.manufacturer.example.com"],
+            "certificateAuthorities": ["ca.manufacturer.example.com"]
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpcs://localhost:7050",
+            "grpcOptions": {
+                "ssl-target-name-override": "orderer.example.com"
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
+            }
+        }
+    },
+    "peers": {
+        "peer0.manufacturer.example.com": {
+            "url": "grpcs://localhost:7051",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.manufacturer.example.com"
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/peerOrganizations/manufacturer.example.com/peers/peer0.manufacturer.example.com/msp/tlscacerts/tlsca.manufacturer.example.com-cert.pem"
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.manufacturer.example.com": {
+            "url": "https://localhost:7054",
+            "caName": "ca.manufacturer.example.com",
+            "httpOptions": {
+                "verify": false
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/peerOrganizations/manufacturer.example.com/ca/ca.manufacturer.example.com-cert.pem"
+            }
+        }
+    }
+}

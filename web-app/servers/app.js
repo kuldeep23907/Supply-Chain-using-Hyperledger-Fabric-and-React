@@ -7,7 +7,7 @@ const express = require('express');
 const morgan = require('morgan');
 
 // const apiResponse = require('./utils/apiResponse.js');
-// const network = require('./fabric/network.js');
+const network = require('./fabric/network.js');
 const router = require('./routes/index.js');
 
 async function main() {
@@ -24,10 +24,6 @@ async function main() {
     // app.use((_req, res) => {
     //     return apiResponse.notFound(res);
     // });
-    authRouter.get('/', (req,res) => {
-        console.log('here');
-    });
-
     app.listen(process.env.PORT);
 }
 

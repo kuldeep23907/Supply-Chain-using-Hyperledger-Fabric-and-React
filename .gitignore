@@ -1,1 +1,3 @@
-web-app/servers/node-modules
+web-app/servers/node_modules
+web-app/servers/identity
+artifacts/network/

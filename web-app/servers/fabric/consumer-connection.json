@@ -1,0 +1,72 @@
+{
+    "name": "supplychainchannel",
+    "description": "Connection Profile",
+    "version": "1.0",
+    "client": {
+        "organization": "Consumer",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300",
+                    "eventHub": "300",
+                    "eventReg": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    },
+    "channels": {
+        "loyaltyplatformchannel": {
+            "orderers": ["orderer.example.com"],
+            "peers": {
+                "peer0.consumer.example.com": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
+                    "eventSource": true
+                }
+            }
+        }
+    },
+    "organizations": {
+        "Consumer": {
+            "mspid": "ConsumerMSP",
+            "peers": ["peer0.consumer.example.com"],
+            "certificateAuthorities": ["ca.consumer.example.com"]
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpcs://localhost:7050",
+            "grpcOptions": {
+                "ssl-target-name-override": "orderer.example.com"
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
+            }
+        }
+    },
+    "peers": {
+        "peer0.consumer.example.com": {
+            "url": "grpcs://localhost:11051",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.consumer.example.com"
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/msp/tlscacerts/tlsca.consumer.example.com-cert.pem"
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.consumer.example.com": {
+            "url": "https://localhost:9054",
+            "caName": "ca.consumer.example.com",
+            "httpOptions": {
+                "verify": false
+            },
+            "tlsCACerts": {
+                "path": "../../artifacts/network/crypto-config/peerOrganizations/consumer.example.com/ca/ca.consumer.example.com-cert.pem"
+            }
+        }
+    }
+}

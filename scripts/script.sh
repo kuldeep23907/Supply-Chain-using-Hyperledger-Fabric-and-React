@@ -20,7 +20,7 @@ DELAY=5
 COUNTER=1
 MAX_RETRY=5
 
-CC_NAME="supplychaincc"
+CC_NAME="dummycc1"
 CC_SRC_PATH="github.com/chaincode/"
 echo "Channel name : "$CHANNEL_NAME
 
@@ -74,6 +74,8 @@ updateAnchorPeers 0 3
 ## Install chaincode on peer0.manufacturer and peer0.student
 echo "Install chaincode on peer0.manufacturer..."
 installChaincode 0 1
+installChaincode 0 2
+installChaincode 0 3
 
 # Instantiate chaincode on peer0.manufacturer
 echo "Instantiating chaincode on peer0.manufacturer..."
