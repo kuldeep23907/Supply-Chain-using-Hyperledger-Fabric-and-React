@@ -15,3 +15,18 @@ exports.createProduct = async information => {
 
     return apiResponse.createModelRes(200, 'Success', contractRes);
 };
+
+exports.createOrder = async information => {
+    const { productID, userId, userType , name } = information;
+
+    const networkObj = await network.connect(false, false, true, id);   
+    const contractRes = await network.invoke(networkObj, 'orderProduct', productID, userId);
+
+    const error = networkObj.error || contractRes.error;
+    if (error) {
+        const status = networkObj.status || contractRes.status;
+        return apiResponse.createModelRes(status, error);
+    }
+
+    return apiResponse.createModelRes(200, 'Success', contractRes);
+};
