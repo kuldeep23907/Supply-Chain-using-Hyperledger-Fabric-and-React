@@ -1,0 +1,127 @@
+{
+	"info": {
+		"_postman_id": "bf167922-c9c4-4845-9865-61f2343cb761",
+		"name": "Supplychain",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "sign in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : \"admin\",\n\t\"password\" : \"adminpw\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/user/signin/:role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"user",
+								"signin",
+								":role"
+							],
+							"variable": [
+								{
+									"key": "role",
+									"value": "manufacturer"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiVXNlclR5cGUiOiJhZG1pbiIsIk5hbWUiOiJhZG1pbiIsImlhdCI6MTU5MDgwOTM2OSwiZXhwIjoxNTkxNDE0MTY5fQ.XxvestdA-0kK036-bhfoaM1nRqiQ4d6ENinyJ8EoSS4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : \"Retailer user\",\n\t\"email\" : \"kk@hh.ll\",\n\t\"address\" : \"fgfhjbn\",\n\t\"password\" : \"retailpwd\",\n\t\"userType\":\"manufacturer\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/user/signup/:role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"user",
+								"signup",
+								":role"
+							],
+							"variable": [
+								{
+									"key": "role",
+									"value": "manufacturer"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiVXNlclR5cGUiOiJhZG1pbiIsIk5hbWUiOiJhZG1pbiIsImlhdCI6MTU5MDgwOTM2OSwiZXhwIjoxNTkxNDE0MTY5fQ.XxvestdA-0kK036-bhfoaM1nRqiQ4d6ENinyJ8EoSS4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8090/user/all/:role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"user",
+								"all",
+								":role"
+							],
+							"variable": [
+								{
+									"key": "role",
+									"value": "manufacturer"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
