@@ -227,6 +227,52 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "update product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlVzZXIxIiwiVXNlclR5cGUiOiJtYW51ZmFjdHVyZXIiLCJOYW1lIjoiTWFudWZhY3R1cmVyIHVzZXIiLCJpYXQiOjE1OTA5MDAyMTEsImV4cCI6MTU5MTUwNTAxMX0.NVnQqipuVQRHMh2fjHhEwUedDIgjmcusHAnQW3DzgIo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : \"shoes\",\n\t\"price\" :\"120\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/product/:productId/:role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"product",
+								":productId",
+								":role"
+							],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "Product1"
+								},
+								{
+									"key": "role",
+									"value": "manufacturer"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
