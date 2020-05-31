@@ -51,13 +51,13 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiVXNlclR5cGUiOiJhZG1pbiIsIk5hbWUiOiJhZG1pbiIsImlhdCI6MTU5MDgwOTM2OSwiZXhwIjoxNTkxNDE0MTY5fQ.XxvestdA-0kK036-bhfoaM1nRqiQ4d6ENinyJ8EoSS4",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiVXNlclR5cGUiOiJhZG1pbiIsIk5hbWUiOiJhZG1pbiIsImlhdCI6MTU5MDg1MjkwNywiZXhwIjoxNTkxNDU3NzA3fQ.sNyqbk_7IismVd19VZKT8J5c7YUzKZ3Pett5RgLa_Co",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\" : \"Retailer user\",\n\t\"email\" : \"kk@hh.ll\",\n\t\"address\" : \"fgfhjbn\",\n\t\"password\" : \"retailpwd\",\n\t\"userType\":\"manufacturer\"\n}",
+							"raw": "{\n\t\"name\" : \"Manufacturer user\",\n\t\"email\" : \"kk@hh.ll\",\n\t\"address\" : \"fgfhjbn\",\n\t\"password\" : \"manufacturerpwd\",\n\t\"userType\":\"manufacturer\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -93,7 +93,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiVXNlclR5cGUiOiJhZG1pbiIsIk5hbWUiOiJhZG1pbiIsImlhdCI6MTU5MDgwOTM2OSwiZXhwIjoxNTkxNDE0MTY5fQ.XxvestdA-0kK036-bhfoaM1nRqiQ4d6ENinyJ8EoSS4",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluIiwiVXNlclR5cGUiOiJhZG1pbiIsIk5hbWUiOiJhZG1pbiIsImlhdCI6MTU5MDg1MjkwNywiZXhwIjoxNTkxNDU3NzA3fQ.sNyqbk_7IismVd19VZKT8J5c7YUzKZ3Pett5RgLa_Co",
 								"type": "text"
 							}
 						],
@@ -107,6 +107,115 @@
 							"path": [
 								"user",
 								"all",
+								":role"
+							],
+							"variable": [
+								{
+									"key": "role",
+									"value": "manufacturer"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "product",
+			"item": [
+				{
+					"name": "create product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlVzZXIxIiwiVXNlclR5cGUiOiJtYW51ZmFjdHVyZXIiLCJOYW1lIjoiTWFudWZhY3R1cmVyIHVzZXIiLCJpYXQiOjE1OTA5MDAyMTEsImV4cCI6MTU5MTUwNTAxMX0.NVnQqipuVQRHMh2fjHhEwUedDIgjmcusHAnQW3DzgIo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : \"shoes\",\n\t\"price\" :\"12\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/product",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list prodcut by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlVzZXIxIiwiVXNlclR5cGUiOiJtYW51ZmFjdHVyZXIiLCJOYW1lIjoiTWFudWZhY3R1cmVyIHVzZXIiLCJpYXQiOjE1OTA5MDAyMTEsImV4cCI6MTU5MTUwNTAxMX0.NVnQqipuVQRHMh2fjHhEwUedDIgjmcusHAnQW3DzgIo",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8090/product/:productId/:role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"product",
+								":productId",
+								":role"
+							],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "Product1"
+								},
+								{
+									"key": "role",
+									"value": "manufacturer"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlVzZXIxIiwiVXNlclR5cGUiOiJtYW51ZmFjdHVyZXIiLCJOYW1lIjoiTWFudWZhY3R1cmVyIHVzZXIiLCJpYXQiOjE1OTA5MDAyMTEsImV4cCI6MTU5MTUwNTAxMX0.NVnQqipuVQRHMh2fjHhEwUedDIgjmcusHAnQW3DzgIo",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8090/product/:role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"product",
 								":role"
 							],
 							"variable": [
