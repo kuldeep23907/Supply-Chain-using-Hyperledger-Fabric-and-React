@@ -12,5 +12,8 @@ productRouter.use('/order', authMiddleware);
 
 productRouter.post('/order', controller.createOrder);
 
+productRouter.use('/delivered', authMiddleware);
+
+productRouter.post('/delivered', controller.isDelivered);
 
 module.exports = entityRouter;

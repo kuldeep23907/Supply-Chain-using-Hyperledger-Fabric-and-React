@@ -30,3 +30,17 @@ exports.createOrder = async information => {
 
     return apiResponse.createModelRes(200, 'Success', contractRes);
 };
+
+exports.isDelivered = async information => {
+    const { productId , id } = information;
+
+    const networkObj = await network.connect(false, false, true, id);
+    const contractRes = await network.invoke(networkObj, 'deliveredProduct', productId );
+
+    const error = networkObj.error || contractRes.error;
+    if (error) {
+        const status = networkObj.status || contractRes.status;
+        return apiResponse.createModelRes(status, error);
+    }
+    return apiResponse.createModelRes(200, 'Success', contractRes);
+};

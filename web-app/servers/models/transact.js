@@ -42,3 +42,17 @@ exports.sendToRetailer = async information => {
     }
     return apiResponse.createModelRes(200, 'Success', contractRes);
 };
+
+exports.sellToConsumer = async information => {
+    const { productId , id } = information;
+
+    const networkObj = await network.connect(false, true, false, id);
+    const contractRes = await network.invoke(networkObj, 'sellToConsumer', productId );
+
+    const error = networkObj.error || contractRes.error;
+    if (error) {
+        const status = networkObj.status || contractRes.status;
+        return apiResponse.createModelRes(status, error);
+    }
+    return apiResponse.createModelRes(200, 'Success', contractRes);
+};
