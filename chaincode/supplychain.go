@@ -369,7 +369,7 @@ func (t *food_supplychain) createProduct(APIstub shim.ChaincodeStubInterface, ar
 
 	fmt.Println("Success in creating Product Asset %v", comAsset)
 
-	return shim.Success(nil)
+	return shim.Success(comAssetAsBytes)
 
 }
 
@@ -446,8 +446,8 @@ func (t *food_supplychain) updateProduct(APIstub shim.ChaincodeStubInterface, ar
 		return shim.Error(fmt.Sprintf("Failed to Sell To Cosumer : %s", product.Product_ID))
 	}
 
-	fmt.Println("Success in sending Product %v ", product.Product_ID)
-	return shim.Success(nil)
+	fmt.Println("Success in updating Product %v ", product.Product_ID)
+	return shim.Success(updatedProductAsBytes)
 
 }
 
@@ -518,7 +518,7 @@ func (t *food_supplychain) orderProduct(APIstub shim.ChaincodeStubInterface, arg
 	}
 
 	fmt.Println("Order placed successfuly %v ", product.Product_ID)
-	return shim.Success(nil)
+	return shim.Success(updatedProductAsBytes)
 }
 
 func (t *food_supplychain) deliveredProduct(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
@@ -563,7 +563,7 @@ func (t *food_supplychain) deliveredProduct(APIstub shim.ChaincodeStubInterface,
 	}
 
 	fmt.Println("Success in delivering Product %v ", product.Product_ID)
-	return shim.Success(nil)
+	return shim.Success(updatedProductAsBytes)
 
 }
 
@@ -629,7 +629,7 @@ func (t *food_supplychain) sendToWholesaler(APIstub shim.ChaincodeStubInterface,
 	}
 
 	fmt.Println("Success in sending Product %v ", product.Product_ID)
-	return shim.Success(nil)
+	return shim.Success(updatedProductAsBytes)
 }
 
 // send to distributor
@@ -694,7 +694,7 @@ func (t *food_supplychain) sendToDistributer(APIstub shim.ChaincodeStubInterface
 	}
 
 	fmt.Println("Success in sending Product %v ", product.Product_ID)
-	return shim.Success(nil)
+	return shim.Success(updatedProductAsBytes)
 }
 
 // send to retailer
@@ -752,7 +752,7 @@ func (t *food_supplychain) sendToRetailer(APIstub shim.ChaincodeStubInterface, a
 	}
 
 	fmt.Println("Sent product %v to retailer successfully", product.Product_ID)
-	return shim.Success(nil)
+	return shim.Success(updatedProductAsBytes)
 }
 
 // function to sell the product to consumer
@@ -811,7 +811,7 @@ func (t *food_supplychain) sellToConsumer(APIstub shim.ChaincodeStubInterface, a
 	}
 
 	fmt.Println("Success in sending Product %v ", product.Product_ID)
-	return shim.Success(nil)
+	return shim.Success(updatedProductAsBytes)
 }
 
 //queryAsset

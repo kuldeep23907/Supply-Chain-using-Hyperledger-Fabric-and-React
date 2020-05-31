@@ -11,8 +11,8 @@ module.exports = async (req, res, next) => {
     try {
         const result = await authenticateUtil.certifyAccessToken(accessToken);
         req.body.id = result.id;
-        req.body.userType = result.UserType;
-        req.body.userName = result.Name;
+        req.body.loggedUserType = result.UserType;
+        req.body.loggedUserName = result.Name;
         return next();
     } catch (err) {
         return apiResponse.unauthorized(res, err.toString());
