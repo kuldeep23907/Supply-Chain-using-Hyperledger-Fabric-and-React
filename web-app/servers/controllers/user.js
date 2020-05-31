@@ -31,7 +31,7 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
     const { id, password } = req.body;
     const { role } = req.params;
-    if (!id || !password) {
+    if (!id || !password || !role) {
         return apiResponse.badRequest(res);
     }
 
