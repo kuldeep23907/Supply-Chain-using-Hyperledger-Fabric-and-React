@@ -28,7 +28,7 @@ exports.signin = async (isManufacturer, isMiddlemen, isConsumer, information) =>
 
     const networkObj = await network.connect(isManufacturer, isMiddlemen, isConsumer, id);
     let contractRes;
-    contractRes = await network.query(networkObj, 'signIn', id, password);
+    contractRes = await network.invoke(networkObj, 'signIn', id, password);
     const error = networkObj.error || contractRes.error;
     if (error) {
         const status = networkObj.status || contractRes.status;

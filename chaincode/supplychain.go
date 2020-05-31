@@ -64,22 +64,6 @@ func main() {
 
 func (t *food_supplychain) Init(APIstub shim.ChaincodeStubInterface) pb.Response {
 
-	// seed admin
-	entityUser := User{Name: "admin", User_ID: "admin", Email: "admin@pg.com", User_Type: "admin", Address: "bangalore", Password: "adminpw"}
-	entityUserAsBytes, errMarshal := json.Marshal(entityUser)
-
-	if errMarshal != nil {
-		return shim.Error(fmt.Sprintf("Marshal Error in Product: %s", errMarshal))
-	}
-
-	errPut := APIstub.PutState(entityUser.User_ID, entityUserAsBytes)
-
-	if errPut != nil {
-		return shim.Error(fmt.Sprintf("Failed to create Entity Asset: %s", entityUser.User_ID))
-	}
-
-	fmt.Println("Added", entityUser)
-
 	// Initializing Product Counter
 	ProductCounterBytes, _ := APIstub.GetState("ProductCounterNO")
 	if ProductCounterBytes == nil {
@@ -121,7 +105,10 @@ func (t *food_supplychain) Invoke(stub shim.ChaincodeStubInterface) pb.Response 
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
-	if function == "signIn" {
+	if function == "initLedger" {
+		//init ledger
+		return t.initLedger(stub, args)
+	} else if function == "signIn" {
 		//login user
 		return t.signIn(stub, args)
 	} else if function == "createUser" {
@@ -208,6 +195,26 @@ func (t *food_supplychain) GetTxTimestampChannel(APIstub shim.ChaincodeStubInter
 	timeStr := time.Unix(txTimeAsPtr.Seconds, int64(txTimeAsPtr.Nanos)).String()
 
 	return timeStr, nil
+}
+
+func (t *food_supplychain) initLedger(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
+	// seed admin
+	entityUser := User{Name: "admin", User_ID: "admin", Email: "admin@pg.com", User_Type: "admin", Address: "bangalore", Password: "adminpw"}
+	entityUserAsBytes, errMarshal := json.Marshal(entityUser)
+
+	if errMarshal != nil {
+		return shim.Error(fmt.Sprintf("Marshal Error in user: %s", errMarshal))
+	}
+
+	errPut := APIstub.PutState(entityUser.User_ID, entityUserAsBytes)
+
+	if errPut != nil {
+		return shim.Error(fmt.Sprintf("Failed to create Entity Asset: %s", entityUser.User_ID))
+	}
+
+	fmt.Println("Added", entityUser)
+
+	return shim.Success(nil)
 }
 
 //sign in

@@ -156,5 +156,65 @@ instantiateChaincode() {
     echo
 }
 
+# parsePeerConnectionParameters $@
+parsePeerConnectionParameters() {
+    if [ $(($# % 2)) -ne 0 ]; then
+        exit 1
+    fi
 
+    PEER_CONN_PARMS=""
+    PEERS=""
+    while [ $# -gt 0 ]; do
+        setGlobals $1 $2
+        if [ $2 -eq 1 ]; then
+            ORG="manager"
+            ORG_UPPER="MANAGER"
+        else
+            ORG="student"
+            ORG_UPPER="STUDENT"
+        fi
 
+        PEER="peer$1.$ORG"
+        PEERS="$PEERS $PEER"
+        PEER_CONN_PARMS="$PEER_CONN_PARMS --peerAddresses $CORE_PEER_ADDRESS"
+        if [ -z $CORE_PEER_TLS_ENABLED -o $CORE_PEER_TLS_ENABLED = "true" ]; then
+            TLSINFO=$(eval echo "--tlsRootCertFiles \$PEER$1_${ORG_UPPER}_CA")
+            PEER_CONN_PARMS="$PEER_CONN_PARMS $TLSINFO"
+        fi
+        shift 2
+    done
+    # remove leading space for output
+    PEERS="$(echo -e "$PEERS" | sed -e 's/^[[:space:]]*//')"
+}
+
+# chaincodeInvoke <func> ( <peer> <org> ) ...
+chaincodeInvoke() {
+    FUNC=$1
+    shift
+    parsePeerConnectionParameters $@
+    res=$?
+    verifyResult $res "Invoke transaction failed on channel '$CHANNEL_NAME' due to uneven number of peer and org parameters "
+
+    case $FUNC in
+    "manufacturer")
+        ARGS='{"Args":["initLedger"]}'
+        ;;
+    esac
+
+    if [ -z $CORE_PEER_TLS_ENABLED -o $CORE_PEER_TLS_ENABLED = "false" ]; then
+        set -x
+        peer chaincode invoke -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CC_NAME -c $ARGS >&log.txt
+        res=$?
+        set +x
+    else
+        set -x
+        peer chaincode invoke -o orderer.example.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n $CC_NAME -c $ARGS >&log.txt
+        res=$?
+        set +x
+    fi
+    sleep $DELAY
+    cat log.txt
+    verifyResult $res "Invoke execution on $PEERS failed "
+    echo "===================== Invoke transaction successful on $PEERS on channel '$CHANNEL_NAME' ===================== "
+    echo
+}
