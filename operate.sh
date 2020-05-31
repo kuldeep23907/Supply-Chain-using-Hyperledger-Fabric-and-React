@@ -249,7 +249,7 @@ function generateChannelArtifacts() {
 OS_ARCH=$(echo "$(uname -s | tr '[:upper:]' '[:lower:]' | sed 's/mingw64_nt.*/windows/')-$(uname -m | sed 's/x86_64/amd64/g')" | awk '{print tolower($0)}')
 SYS_CHANNEL="supplychain_hlfn-sys-channel"
 CHANNEL_NAME="supplychainchannel"
-CC_NAME="dummycc1"
+CC_NAME="dummycc3"
 COMPOSE_FILE=./artifacts/docker-compose.yaml
 IMAGETAG="1.4.6"
 CONSENSUS_TYPE="solo"

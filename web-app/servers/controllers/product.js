@@ -20,20 +20,28 @@ exports.createProduct = async (req, res) => {
 };
 
 exports.updateProduct = async (req, res) => {
-    const { productId, id, name, price , loggedUserType } = req.body;
+    const { id, name, price , loggedUserType } = req.body;
+    const { role, productId } = req.params;
     console.log('1');
 
-    if (!productId || !name || !id || !price || !usertype) {
+    if (!productId || !name || !id || !price || !loggedUserType || !role) {
         return apiResponse.badRequest(res);
     }
     console.log('2');
 
-    if (loggedUserType !== 'consumer' ) {
+    if (loggedUserType === 'consumer' ) {
         return apiResponse.badRequest(res);
     }
     console.log('3');
 
-    const modelRes = await productModel.updateProduct({ productId, id, name, price });
+    let modelRes
+    if( role === 'manufacturer' ) {
+        modelRes = await productModel.updateProduct(true, false,false, { productId, id, name, price });
+    } else if( role === 'middlemen' ) {
+        modelRes = await productModel.updateProduct(false, true, false, { productId, id, name, price });
+    } else {
+        return apiResponse.badRequest(res);
+    }
     return apiResponse.send(res, modelRes);
 };
 

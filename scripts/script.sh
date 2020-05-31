@@ -20,7 +20,7 @@ DELAY=5
 COUNTER=1
 MAX_RETRY=5
 
-CC_NAME="dummycc1"
+CC_NAME="dummycc3"
 CC_SRC_PATH="github.com/chaincode/"
 echo "Channel name : "$CHANNEL_NAME
 

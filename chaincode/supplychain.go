@@ -370,7 +370,6 @@ func (t *food_supplychain) createProduct(APIstub shim.ChaincodeStubInterface, ar
 	fmt.Println("Success in creating Product Asset %v", comAsset)
 
 	return shim.Success(comAssetAsBytes)
-
 }
 
 // function to update the product name and price
@@ -448,7 +447,6 @@ func (t *food_supplychain) updateProduct(APIstub shim.ChaincodeStubInterface, ar
 
 	fmt.Println("Success in updating Product %v ", product.Product_ID)
 	return shim.Success(updatedProductAsBytes)
-
 }
 
 func (t *food_supplychain) orderProduct(APIstub shim.ChaincodeStubInterface, args []string) pb.Response {
