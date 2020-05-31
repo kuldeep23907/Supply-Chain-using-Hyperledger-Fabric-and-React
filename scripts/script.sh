@@ -20,7 +20,7 @@ DELAY=5
 COUNTER=1
 MAX_RETRY=5
 
-CC_NAME="dummycc3"
+CC_NAME="dummycc6"
 CC_SRC_PATH="github.com/chaincode/"
 echo "Channel name : "$CHANNEL_NAME
 
@@ -81,39 +81,9 @@ installChaincode 0 3
 echo "Instantiating chaincode on peer0.manufacturer..."
 instantiateChaincode 0 1
 
-# # Invoke chaincode on peer0.manufacturer
-# echo "Sending invoke transaction on peer0.manufacturer"
-# chaincodeInvoke "manufacturer" 0 1
-
-# ## Install chaincode on peer1.manufacturer and peer1.student
-# echo "Installing chaincode on peer1.manufacturer..."
-# installChaincode 1 1
-# echo "Installing chaincode on peer1.student..."
-# installChaincode 1 2
-
-# # Query on chaincode on peer1.manufacturer
-# echo "Querying chaincode on peer1.manufacturer..."
-# chaincodeQuery "manufacturer" 1 1
-
-# # Invoke chaincode on peer0.student
-# echo "Sending invoke transaction on peer0.student"
-# chaincodeInvoke "register" 0 2
-
-# # Query on chaincode on peer1.manufacturer
-# echo "Querying chaincode on peer1.manufacturer..."
-# chaincodeQuery "info" 1 1
-
-# # Invoke chaincode on peer1.student
-# echo "Sending invoke transaction on peer1.student"
-# chaincodeInvoke "remove" 1 2
-
-# # Query on chaincode on peer1.student
-# echo "Querying chaincode on peer1.student..."
-# chaincodeQuery "manufacturer" 1 2
-
-# # Query on chaincode on peer0.manufacturer
-# echo "Querying chaincode on peer0.manufacturer..."
-# chaincodeQuery "info" 0 1
+# Invoke chaincode on peer0.manufacturer
+echo "Sending invoke transaction on peer0.manufacturer"
+chaincodeInvoke "manufacturer" 0 1
 
 echo
 echo "========= All GOOD, execution completed =========== "

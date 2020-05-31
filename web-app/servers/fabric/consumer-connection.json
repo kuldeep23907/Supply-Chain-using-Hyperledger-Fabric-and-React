@@ -16,7 +16,7 @@
         }
     },
     "channels": {
-        "loyaltyplatformchannel": {
+        "supplychainchannel": {
             "orderers": ["orderer.example.com"],
             "peers": {
                 "peer0.consumer.example.com": {

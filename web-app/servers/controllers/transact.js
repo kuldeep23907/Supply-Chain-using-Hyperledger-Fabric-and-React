@@ -3,27 +3,29 @@ const apiResponse = require('../utils/apiResponse.js');
 
 exports.transactProduct = async (req, res) => {
     // find who initiates this event by decoding the token and getting the user type
-    const { id, userType, name , productId , userId } = req.body;
+    const { id, loggedUserType , productId , userId } = req.body;
     console.log('1');
-    if (!name || !userId || !userType || !productId || !id) {
+    if ( !userId || !loggedUserType || !productId || !id) {
         return apiResponse.badRequest(res);
     }
     console.log('2');
-    const modelRes;
-    if(userType == 'manufacturer')
+    let modelRes;
+    if(loggedUserType == 'manufacturer')
     {
         // call send to Wholesaler
         modelRes= await transactModel.sendToWholesaler({ productId , userId , id });
     }
-    else if(userType == 'wholesaler')
+    else if(loggedUserType == 'wholesaler')
     {
         // call send to Distributor
         modelRes = await transactModel.sendToDistributer({ productId , userId , id });
     }
-    else if(userType == 'distributor')
+    else if(loggedUserType == 'distributor')
     {
         // call send to Retailer
         modelRes = await transactModel.sendToRetailer({ productId , userId , id  });
+    } else {
+        return apiResponse.badRequest(res);
     }
     console.log('3');
     return apiResponse.send(res, modelRes);
@@ -31,16 +33,17 @@ exports.transactProduct = async (req, res) => {
 
 exports.transactProductConsumer = async (req, res) => {
     // find who initiates this event by decoding the token and getting the user type
-    const { id, userType, name , productId , userId } = req.body;
+    const { id, loggedUserType, name , productId , userId } = req.body;
     console.log('1');
-    if (!name || !userId || !userType || !productId || !id) {
+    if (!name || !userId || !loggedUserType || !productId || !id) {
         return apiResponse.badRequest(res);
     }
     console.log('2');
-    const modelRes;
-    if(userType == 'retailer')
-    {
+    let modelRes;
+    if(loggedUserType == 'retailer') {
         modelRes= await transactModel.sellToConsumer({ productId , id });
+    } else {
+        return apiResponse.badRequest(res);
     }
 
     console.log('3');
