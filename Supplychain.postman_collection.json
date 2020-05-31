@@ -273,6 +273,40 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Send Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlVzZXIxIiwiVXNlclR5cGUiOiJtYW51ZmFjdHVyZXIiLCJOYW1lIjoiTWFudWZhY3R1cmVyIHVzZXIiLCJpYXQiOjE1OTA5MDAyMTEsImV4cCI6MTU5MTUwNTAxMX0.NVnQqipuVQRHMh2fjHhEwUedDIgjmcusHAnQW3DzgIo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"productId\" : \"Product1\",\n\t\"userId\" : \"User3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/transact",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"transact"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
