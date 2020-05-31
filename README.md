@@ -32,6 +32,10 @@ Since the blockchain is a transparent, immutable, and secure decentralized syste
 * Retailer 
 * Consumer
 
+## Application Architecture :
+
+![](Architecture.JPG)
+
 ## Application Flow :
 
 * Users are enrolled into the application by an Admin.
