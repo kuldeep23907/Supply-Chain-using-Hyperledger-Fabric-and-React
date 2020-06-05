@@ -89,6 +89,14 @@ Since the blockchain is a transparent, immutable, and secure decentralized syste
  3. ./teardown.sh
  4. ./operate.sh up
 
+# Steps to run the API server
+
+cd web-app/servers/
+
+npm install
+
+nodemon app.js
+
 # Steps to up the network using commands :
 
 
